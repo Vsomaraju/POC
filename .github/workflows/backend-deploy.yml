@@ -43,32 +43,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: server/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('server/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: |
-          cd server
-          npm ci
+        working-directory: ./server
+        run: npm ci
 
       - name: Run linting
-        run: |
-          cd server
-          npm run lint || echo "Linting not configured"
+        working-directory: ./server
+        run: npm run lint || echo "Linting not configured"
 
       - name: Run tests
-        run: |
-          cd server
-          npm test || echo "Tests not configured"
+        working-directory: ./server
+        run: npm test || echo "Tests not configured"
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           JWT_SECRET: test-secret
           FHIR_BASE_URL: https://hapi.fhir.org/baseR4
 
       - name: Build application
-        run: |
-          cd server
-          npm run build
+        working-directory: ./server
+        run: npm run build
 
   build-and-push:
     name: Build and Push Docker Image
@@ -189,18 +191,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: server/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('server/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: |
-          cd server
-          npm ci
+        working-directory: ./server
+        run: npm ci
 
       - name: Run security audit
-        run: |
-          cd server
-          npm audit --audit-level=moderate
+        working-directory: ./server
+        run: npm audit --audit-level=moderate
 
       - name: Run Snyk security scan
         uses: snyk/actions/node@master

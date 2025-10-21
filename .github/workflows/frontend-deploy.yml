@@ -28,23 +28,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: |
-          cd client
-          npm ci
+        working-directory: ./client
+        run: npm ci
 
       - name: Run linting
-        run: |
-          cd client
-          npm run lint
+        working-directory: ./client
+        run: npm run lint
 
       - name: Build application
-        run: |
-          cd client
-          npm run build
+        working-directory: ./client
+        run: npm run build
         env:
           VITE_API_URL: ${{ env.VITE_API_URL }}
 
@@ -70,18 +73,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: |
-          cd client
-          npm ci
+        working-directory: ./client
+        run: npm ci
 
       - name: Build for staging
-        run: |
-          cd client
-          npm run build
+        working-directory: ./client
+        run: npm run build
         env:
           VITE_API_URL: 'https://staging-api.yourdomain.com/api'
 
@@ -109,18 +116,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: |
-          cd client
-          npm ci
+        working-directory: ./client
+        run: npm ci
 
       - name: Build for production
-        run: |
-          cd client
-          npm run build
+        working-directory: ./client
+        run: npm run build
         env:
           VITE_API_URL: 'https://api.yourdomain.com/api'
 
@@ -151,20 +162,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: |
-          cd client
-          npm ci
+        working-directory: ./client
+        run: npm ci
 
       - name: Run security audit
-        run: |
-          cd client
-          npm audit --audit-level=moderate
+        working-directory: ./client
+        run: npm audit --audit-level=moderate
 
       - name: Run dependency check
-        run: |
-          cd client
-          npx audit-ci --config audit-ci.json || true
+        working-directory: ./client
+        run: npx audit-ci --config audit-ci.json || true
