@@ -11,12 +11,6 @@ export default function PatientDetail() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    if (id) {
-      loadPatientData()
-    }
-  }, [id, loadPatientData])
-
   const loadPatientData = useCallback(async () => {
     if (!id) return
 
@@ -37,6 +31,12 @@ export default function PatientDetail() {
       setIsLoading(false)
     }
   }, [id])
+
+  useEffect(() => {
+    if (id) {
+      loadPatientData()
+    }
+  }, [id, loadPatientData])
 
   const formatName = () => {
     if (!patient?.name || patient.name.length === 0) return 'Unknown'
