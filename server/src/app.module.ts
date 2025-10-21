@@ -1,10 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { FhirModule } from './fhir/fhir.module';
 import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PerformanceMiddleware } from './middleware/performance.middleware';
+import { PerformanceInterceptor } from './interceptors/performance.interceptor';
 
 @Module({
   imports: [
@@ -16,7 +19,19 @@ import { AppService } from './app.service';
     FhirModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PerformanceInterceptor,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PerformanceMiddleware)
+      .forRoutes('*'); // Apply to all routes
+  }
+}
 
