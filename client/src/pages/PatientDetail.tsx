@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Navbar } from '../components/Navbar'
 import { fhirApi } from '../services/api'
@@ -15,9 +15,9 @@ export default function PatientDetail() {
     if (id) {
       loadPatientData()
     }
-  }, [id])
+  }, [id, loadPatientData])
 
-  const loadPatientData = async () => {
+  const loadPatientData = useCallback(async () => {
     if (!id) return
 
     setIsLoading(true)
@@ -36,7 +36,7 @@ export default function PatientDetail() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [id])
 
   const formatName = () => {
     if (!patient?.name || patient.name.length === 0) return 'Unknown'
