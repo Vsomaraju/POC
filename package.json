@@ -33,8 +33,16 @@
     "@nx/workspace": "^22.0.2",
     "@originjs/vite-plugin-federation": "^1.4.1",
     "@types/node": "^24.10.0",
+    "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^5.1.0",
     "concurrently": "^8.2.2",
     "esbuild": "^0.25.12",
     "nx": "22.0.2"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "react-hook-form": "^7.66.0",
+    "react-router-dom": "^7.9.5",
+    "zod": "^4.1.12"
   }
 }
