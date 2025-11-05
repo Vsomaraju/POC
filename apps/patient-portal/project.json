@@ -1,0 +1,59 @@
+{
+  "name": "patient-portal",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/patient-portal/src",
+  "projectType": "application",
+  "tags": ["scope:patient-portal", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/patient-portal",
+        "configFile": "apps/patient-portal/vite.config.ts"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "patient-portal:build",
+        "port": 4201
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "patient-portal:build:development"
+        },
+        "production": {
+          "buildTarget": "patient-portal:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "buildTarget": "patient-portal:build:production"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "patient-portal:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

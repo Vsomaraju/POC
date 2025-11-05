@@ -16,17 +16,13 @@ Before starting, make sure you have:
 Open your terminal in the `CODE` directory and run:
 
 ```bash
+# Install all dependencies (root, server, and Nx apps)
+npm install
+
 # Install server dependencies
 cd server
 npm install
-
-# Install client dependencies  
-cd ../client
-npm install
-
-# Install root dependencies (for running both together)
 cd ..
-npm install
 ```
 
 This might take 2-3 minutes. ☕
@@ -39,17 +35,18 @@ From the root `CODE` directory:
 npm run dev
 ```
 
-This will start both the backend server and frontend client simultaneously!
+This will start the backend server and both micro frontends (host and patient-portal) simultaneously!
 
 You should see:
 ```
 [server] 🚀 Server is running on http://localhost:3001
-[client] ➜  Local:   http://localhost:5173/
+[host] ➜  Local:   http://localhost:4200/
+[patient-portal] ➜  Local:   http://localhost:4201/
 ```
 
 ### Step 3: Open and Test
 
-1. **Open your browser** → http://localhost:5173
+1. **Open your browser** → http://localhost:4200 (Host app with micro frontends)
 
 2. **Register a new account**:
    - Click "Register here"
@@ -77,10 +74,11 @@ The app is now connected to a public FHIR server (HAPI FHIR) and fetching real h
 - ✅ Connected to FHIR server
 - ✅ API endpoints active
 
-### Frontend (Port 5173)
-- ✅ React app running
+### Frontend (Micro Frontends)
+- ✅ Host app running on port 4200
+- ✅ Patient Portal micro frontend on port 4201
+- ✅ Module Federation enabled
 - ✅ Vite dev server with hot reload
-- ✅ Proxy configured to backend
 - ✅ Modern UI ready
 
 ---
@@ -114,7 +112,7 @@ If you prefer using Docker:
 docker-compose up --build
 ```
 
-Then open http://localhost:5173
+Then open http://localhost:4200
 
 Stop with:
 ```bash
@@ -133,8 +131,11 @@ npm run dev
 # Start server only
 cd server && npm run start:dev
 
-# Start client only  
-cd client && npm run dev
+# Start host app only
+npm run dev:host
+
+# Start patient-portal only
+npm run dev:patient-portal
 ```
 
 ### Testing Backend
@@ -161,8 +162,11 @@ curl http://localhost:3001
 # Kill port 3001 (backend)
 lsof -ti:3001 | xargs kill -9
 
-# Kill port 5173 (frontend)
-lsof -ti:5173 | xargs kill -9
+# Kill port 4200 (host app)
+lsof -ti:4200 | xargs kill -9
+
+# Kill port 4201 (patient-portal)
+lsof -ti:4201 | xargs kill -9
 ```
 
 ### Issue: "Module not found" errors
@@ -174,8 +178,8 @@ cd server
 rm -rf node_modules
 npm install
 
-cd ../client
-rm -rf node_modules
+# Reinstall root dependencies
+rm -rf node_modules package-lock.json
 npm install
 ```
 
@@ -200,16 +204,18 @@ npm install
 
 - **Full Documentation**: See [README.md](./README.md)
 - **Project Structure**: See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
-- **Detailed Setup**: See [SETUP.md](./SETUP.md)
+- **Micro Frontend Guide**: See [MICRO_FRONTEND_GUIDE.md](./MICRO_FRONTEND_GUIDE.md)
 
 ---
 
 ## 🎓 What to Explore Next
 
 ### For Frontend Developers:
-1. Check `client/src/pages/` - Add new pages
-2. Look at `client/src/components/` - Create new components
-3. Explore `client/src/contexts/AuthContext.tsx` - State management
+1. Check `apps/patient-portal/src/pages/` - Add new pages
+2. Look at `apps/patient-portal/src/components/` - Create new components
+3. Explore `apps/patient-portal/src/contexts/AuthContext.tsx` - State management
+4. Check `apps/host/` - Host application for micro frontends
+5. See `MICRO_FRONTEND_GUIDE.md` - Learn about micro frontend architecture
 
 ### For Backend Developers:
 1. Check `server/src/fhir/` - Add new FHIR resources
@@ -257,5 +263,5 @@ npm install
 
 ---
 
-*Last updated: October 2024*
+*Last updated: November 2024 - Migrated to Micro Frontend Architecture*
 

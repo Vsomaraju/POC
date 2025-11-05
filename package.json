@@ -4,20 +4,37 @@
   "description": "Monorepo with React client and NestJS backend for FHIR POC",
   "private": true,
   "workspaces": [
-    "client",
     "server"
   ],
   "scripts": {
-    "install:all": "npm install && npm install --prefix client && npm install --prefix server",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "install:all": "npm install && npm install --prefix server",
+    "dev": "nx run-many --target=serve --projects=host,patient-portal --parallel=2",
+    "dev:host": "nx serve host",
+    "dev:patient-portal": "nx serve patient-portal",
+    "dev:patient-portal:preview": "npm run build:patient-portal && nx preview patient-portal",
     "dev:server": "cd server && npm run start:dev",
-    "dev:client": "cd client && npm run dev",
-    "build": "npm run build:server && npm run build:client",
+    "dev:all": "concurrently \"npm run dev:server\" \"nx run-many --target=serve --projects=host,patient-portal --parallel=2\"",
+    "dev:all:preview": "concurrently \"npm run dev:server\" \"npm run dev:patient-portal:preview\" \"npm run dev:host\"",
+    "build": "nx run-many --target=build --all --parallel=3",
+    "build:host": "nx build host",
+    "build:patient-portal": "nx build patient-portal",
     "build:server": "cd server && npm run build",
-    "build:client": "cd client && npm run build"
+    "lint": "nx run-many --target=lint --all",
+    "test": "nx run-many --target=test --all",
+    "graph": "nx graph"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@esbuild/darwin-arm64": "^0.25.12",
+    "@nx/eslint": "^22.0.2",
+    "@nx/jest": "^22.0.2",
+    "@nx/react": "^22.0.2",
+    "@nx/vite": "^22.0.2",
+    "@nx/webpack": "^22.0.2",
+    "@nx/workspace": "^22.0.2",
+    "@originjs/vite-plugin-federation": "^1.4.1",
+    "@types/node": "^24.10.0",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.25.12",
+    "nx": "22.0.2"
   }
 }
-
