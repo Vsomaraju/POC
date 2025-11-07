@@ -1,6 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
 import { FormSchema, FormFieldSchema, FormSubmitHandler } from '../types/formSchema'
+import { isSSR, isHydration, getRenderEnvironment } from '@shared/utils'
 
 interface DynamicFormProps {
   schema: FormSchema
@@ -17,6 +19,17 @@ export default function DynamicForm({
   error,
   successMessage,
 }: DynamicFormProps) {
+  const [isMounted, setIsMounted] = useState(false)
+  const [renderEnv, setRenderEnv] = useState<'server' | 'client' | 'hydration'>('server')
+
+  // Detect SSR and hydration
+  useEffect(() => {
+    setIsMounted(true)
+    setRenderEnv(getRenderEnvironment())
+  }, [])
+
+  const isServerRender = isSSR()
+  const isHydrating = isHydration()
   const {
     register,
     handleSubmit,
@@ -140,6 +153,23 @@ export default function DynamicForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
+      {/* SSR Detection Indicator (for debugging - remove in production) */}
+      {process.env.NODE_ENV === 'development' && isMounted && (
+        <div 
+          style={{ 
+            fontSize: '0.75rem', 
+            padding: '0.25rem 0.5rem', 
+            marginBottom: '0.5rem',
+            backgroundColor: isServerRender ? '#ff9800' : isHydrating ? '#2196f3' : '#4caf50',
+            color: 'white',
+            borderRadius: '4px',
+            textAlign: 'center'
+          }}
+        >
+          Render: {renderEnv} {isServerRender ? '(SSR)' : isHydrating ? '(Hydrating)' : '(Client)'}
+        </div>
+      )}
+
       {/* Form Title */}
       {schema.title && (
         <h1 style={{ marginBottom: '0.5rem', textAlign: 'center' }}>
@@ -185,7 +215,7 @@ export default function DynamicForm({
       <button
         type="submit"
         className="btn-primary"
-        disabled={isLoading}
+        disabled={isLoading || (isServerRender && !isMounted)}
         style={{ width: '100%', marginTop: '1rem' }}
       >
         {isLoading

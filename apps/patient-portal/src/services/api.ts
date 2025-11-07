@@ -1,6 +1,24 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
+// Use full backend URL if VITE_API_URL is not set, or if it's a relative path in preview mode
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  
+  // If VITE_API_URL is set and is a full URL, use it
+  if (envUrl && (envUrl.startsWith('http://') || envUrl.startsWith('https://'))) {
+    return envUrl;
+  }
+  
+  // If VITE_API_URL is set as relative path, use it (works with proxy in dev mode)
+  if (envUrl) {
+    return envUrl;
+  }
+  
+  // Default: use full backend URL (for preview mode or when no env var is set)
+  return 'http://localhost:3001/api';
+};
+
+const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,

@@ -23,8 +23,10 @@ export class PerformanceMiddleware implements NestMiddleware {
     });
 
     // Override res.end to capture response time
-    const originalEnd = res.end;
-    res.end = function(chunk?: any, encoding?: any) {
+    const originalEnd = res.end.bind(res);
+    const middleware = this;
+    
+    res.end = function(chunk?: any, encoding?: any): Response {
       const endTime = Date.now();
       const duration = endTime - startTime;
       const statusCode = res.statusCode;
@@ -42,18 +44,18 @@ export class PerformanceMiddleware implements NestMiddleware {
 
       if (duration > 5000) {
         // Log slow requests as warnings
-        this.logger.warn(`🐌 SLOW REQUEST: ${method} ${originalUrl} took ${duration}ms`, logData);
+        middleware.logger.warn(`🐌 SLOW REQUEST: ${method} ${originalUrl} took ${duration}ms`, logData);
       } else if (duration > 2000) {
         // Log moderately slow requests as warnings
-        this.logger.warn(`⚠️  MODERATE SLOW REQUEST: ${method} ${originalUrl} took ${duration}ms`, logData);
+        middleware.logger.warn(`⚠️  MODERATE SLOW REQUEST: ${method} ${originalUrl} took ${duration}ms`, logData);
       } else {
         // Log normal requests as debug
-        this.logger.debug(`✅ ${method} ${originalUrl} completed in ${duration}ms`, logData);
+        middleware.logger.debug(`✅ ${method} ${originalUrl} completed in ${duration}ms`, logData);
       }
 
-      // Call the original end method
-      originalEnd.call(this, chunk, encoding);
-    }.bind(this);
+      // Call the original end method with correct context and return the result
+      return originalEnd(chunk, encoding);
+    };
 
     next();
   }

@@ -4,6 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { FhirModule } from './fhir/fhir.module';
 import { UsersModule } from './users/users.module';
+import { SsrModule } from './ssr/ssr.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PerformanceMiddleware } from './middleware/performance.middleware';
@@ -17,6 +18,7 @@ import { PerformanceInterceptor } from './interceptors/performance.interceptor';
     AuthModule,
     UsersModule,
     FhirModule,
+    SsrModule,
   ],
   controllers: [AppController],
   providers: [
